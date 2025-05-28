@@ -1,6 +1,5 @@
-from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
-from jokes import jokes, raw_jokes
+from jokes import raw_jokes, joke_vectors
 from scipy.spatial.distance import cosine
 import spacy
 import time
@@ -37,33 +36,18 @@ class ComedyBot():
                topic_word = input("What's another topic you would a joke on? ")
 
    def find_most_similar_index(self, topic_word):
-       similarities = []
-       for joke in jokes:
-           similar_words = 0
-           for token in joke:
-               if topic_word == token:
-                   similar_words += 1
-           similarities.append(similar_words)
-       max_similarities = max(similarities)
-       if max_similarities:
-           most_similar_index = similarities.index(max_similarities)
-           return most_similar_index
-       print("Please enter another (more basic) topic")
+       topic_word_vector = nlp(topic_word).vector
+       similar_dist = 100
+       curr_index = 0
+       similar_index = curr_index
+       for joke in joke_vectors:
+            for token_vector in joke:
+                current_dist = cosine(token_vector, topic_word_vector)
+                if current_dist < similar_dist:
+                    similar_dist = current_dist
+                    similar_index = curr_index
+            curr_index += 1
+       return similar_index
 
 bot = ComedyBot()
 bot.greet()
-
-# Wanted to do this but too freaking buggy
-# topic_word_vector = nlp(topic_word).vector
-#         similar_dist = 100
-#         most_similar_joke = "Blah blah"
-#         for joke in joke_vectors:
-#             for token_vector in joke:
-#                 current_dist = cosine(token_vector, topic_word_vector)
-#                 if current_dist < similar_dist and current_dist != 0:
-#                     print("Found smaller distance")
-#                     similar_dist = current_dist
-#                     print(current_dist)
-#                     print(joke_vectors.index(joke))
-#                     # most_similar_joke = jokes[joke_vectors.index(joke)]
-#         return most_similar_joke
