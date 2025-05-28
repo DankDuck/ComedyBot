@@ -1,5 +1,5 @@
 from nltk.tokenize import word_tokenize
-from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk.stem import PorterStemmer
 from bs4 import BeautifulSoup
 
 import requests
@@ -7,23 +7,24 @@ import re
 import spacy
 
 nlp = spacy.load('en_core_web_md')
-# have to add this :(
-# import nltk
-# nltk.download('wordnet')
-url = 'https://www.countryliving.com/life/a27452412/best-dad-jokes/'
-response = requests.get(url)
-html = response.text 
-soup = BeautifulSoup(html, 'html.parser')
+url1 = 'https://www.countryliving.com/life/a27452412/best-dad-jokes/'
+response = requests.get(url1).text
+soup = BeautifulSoup(response, 'html.parser')
 
-joke_elements = soup.find_all('li')
+joke_elements1 = soup.find_all('li')
+
+url2 = 'https://www.menshealth.com/trending-news/a34437277/best-dad-jokes/'
+response = requests.get(url2).text
+soup = BeautifulSoup(response, 'html.parser')
+joke_elements2 = soup.find_all('li')
+joke_elements = joke_elements1.extend(joke_elements2)
 
 raw_jokes = []
 jokes = []
 joke_vectors = []
 stemmer = PorterStemmer()
-lemmatizer = WordNetLemmatizer()
-   
-for joke_elem in joke_elements:
+
+for joke_elem in joke_elements2:
     joke_text = joke_elem.get_text(strip=True)
     if len(joke_text) >= 25:
         raw_jokes.append(joke_text)
@@ -31,8 +32,6 @@ for joke_elem in joke_elements:
         token_vectors = []
         for token in tokens:
             token = stemmer.stem(token).lower()
-            token = lemmatizer.lemmatize(token)
             token_vectors.append(nlp(token).vector)
         jokes.append(tokens)
         joke_vectors.append(token_vectors)
-
