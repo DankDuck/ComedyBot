@@ -24,7 +24,6 @@ joke_elements3 = get_url_jokes('https://www.thepioneerwoman.com/home-lifestyle/a
 joke_elements = joke_elements1 + joke_elements2 + joke_elements3
 
 raw_jokes = []
-jokes = []
 joke_vectors = []
 stemmer = PorterStemmer()
 
@@ -37,9 +36,7 @@ for joke_elem in joke_elements:
         token_vectors = []
         for token in tokens:
             token = stemmer.stem(token).lower()
-            word_vector = nlp(token).vector
             topic_word_vector = nlp(token).vector
-            if not np.all(topic_word_vector == 0):
+            if np.any(topic_word_vector):
                 token_vectors.append(topic_word_vector)
-        jokes.append(tokens)
         joke_vectors.append(token_vectors)
