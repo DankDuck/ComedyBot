@@ -32,11 +32,11 @@ for joke_elem in joke_elements:
     joke_text = joke_elem.get_text(strip=True)
     if len(joke_text) >= 25:
         raw_jokes.append(joke_text)
-        tokens = word_tokenize(re.sub(r'[\.\,\?\"]|jokes', '', joke_text))
+        tokens = word_tokenize(re.sub(r'[\.\,\?\"]|.*Jokes.*', '', joke_text))
         token_vectors = []
         for token in tokens:
             token = stemmer.stem(token).lower()
-            topic_word_vector = nlp(token).vector
-            if np.any(topic_word_vector):
-                token_vectors.append(topic_word_vector)
+            word_vector = nlp(token).vector
+            if not np.all(word_vector == 0):
+                token_vectors.append(str(word_vector))
         joke_vectors.append(token_vectors)
