@@ -2,6 +2,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from bs4 import BeautifulSoup
 
+import numpy as np
 import requests
 import re
 import spacy
@@ -32,10 +33,13 @@ for joke_elem in joke_elements:
     joke_text = joke_elem.get_text(strip=True)
     if len(joke_text) >= 25:
         raw_jokes.append(joke_text)
-        tokens = word_tokenize(re.sub(r'[\.\,\?\"]|joke', '', joke_text))
+        tokens = word_tokenize(re.sub(r'[\.\,\?\"]|jokes', '', joke_text))
         token_vectors = []
         for token in tokens:
             token = stemmer.stem(token).lower()
-            token_vectors.append(nlp(token).vector)
+            word_vector = nlp(token).vector
+            topic_word_vector = nlp(token).vector
+            if not np.all(topic_word_vector == 0):
+                token_vectors.append(topic_word_vector)
         jokes.append(tokens)
         joke_vectors.append(token_vectors)
