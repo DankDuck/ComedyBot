@@ -7,28 +7,32 @@ import re
 import spacy
 
 nlp = spacy.load('en_core_web_md')
-url1 = 'https://www.countryliving.com/life/a27452412/best-dad-jokes/'
-response = requests.get(url1).text
-soup = BeautifulSoup(response, 'html.parser')
 
-joke_elements1 = soup.find_all('li')
+# get urls
+def get_url_jokes(url):
+    response = requests.get(url).text
+    soup = BeautifulSoup(response, 'html.parser')
+    element_jokes = soup.find_all('li')
+    return element_jokes
 
-url2 = 'https://www.menshealth.com/trending-news/a34437277/best-dad-jokes/'
-response = requests.get(url2).text
-soup = BeautifulSoup(response, 'html.parser')
-joke_elements2 = soup.find_all('li')
-joke_elements = joke_elements1.extend(joke_elements2)
+# get sites
+joke_elements1 = get_url_jokes('https://www.countryliving.com/life/a27452412/best-dad-jokes/')
+joke_elements2 = get_url_jokes('https://www.menshealth.com/trending-news/a34437277/best-dad-jokes/')
+joke_elements3 = get_url_jokes('https://www.thepioneerwoman.com/home-lifestyle/a35617884/best-dad-jokes/')
+
+joke_elements = joke_elements1 + joke_elements2 + joke_elements3
 
 raw_jokes = []
 jokes = []
 joke_vectors = []
 stemmer = PorterStemmer()
 
-for joke_elem in joke_elements2:
+# add each indiv word to a list and its 'number values'
+for joke_elem in joke_elements:
     joke_text = joke_elem.get_text(strip=True)
     if len(joke_text) >= 25:
         raw_jokes.append(joke_text)
-        tokens = word_tokenize(re.sub(r'[\.\,\?\"]', '', joke_text))
+        tokens = word_tokenize(re.sub(r'[\.\,\?\"]|joke', '', joke_text))
         token_vectors = []
         for token in tokens:
             token = stemmer.stem(token).lower()
