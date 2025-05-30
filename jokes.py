@@ -1,4 +1,5 @@
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from bs4 import BeautifulSoup
 
@@ -27,16 +28,19 @@ raw_jokes = []
 joke_vectors = []
 stemmer = PorterStemmer()
 
+common_words = ['why', "what's", "do"]
+stop_words = stopwords.words('english')
 # add each indiv word to a list and its 'number values'
 for joke_elem in joke_elements:
     joke_text = joke_elem.get_text(strip=True)
     if len(joke_text) >= 25:
         raw_jokes.append(joke_text)
-        tokens = word_tokenize(re.sub(r'[\.\,\?\"]|.*Jokes.*', '', joke_text))
+        tokens = word_tokenize(re.sub(r'[\.\,\?\"]|.*jokes.*', '', joke_text.lower()))
         token_vectors = []
         for token in tokens:
-            token = stemmer.stem(token).lower()
-            word_vector = nlp(token).vector
-            if not np.all(word_vector == 0):
-                token_vectors.append(str(word_vector))
+            if token not in stop_words:
+                token = stemmer.stem(token).lower()
+                word_vector = nlp(token).vector
+                if not np.all(word_vector == 0):
+                    token_vectors.append(word_vector)
         joke_vectors.append(token_vectors)
