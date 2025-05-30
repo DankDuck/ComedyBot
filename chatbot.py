@@ -10,7 +10,7 @@ np.seterr(divide='ignore', invalid='ignore')
 nlp = spacy.load('en_core_web_md')
 
 class ComedyBot():
-   exit_commands = {"bye", "exit", "cya", "nah"}
+   exit_commands = {"bye", "exit", "cya", "nah", "stop"}
 
    stemmer = PorterStemmer()
 # preprocess text
@@ -21,7 +21,7 @@ class ComedyBot():
 # starting greeting
    def greet(self):
        print("I'm Comedy Bot (°▽°)/	 ")
-       response = input("What topic would you like your joke on? ")
+       response = input("What topic would you like your joke on? \n")
        self.give_funny(response)
 
 # exit if user triggers exit command
@@ -37,15 +37,15 @@ class ComedyBot():
        while not self.make_exit(topic_word):
            most_similar_index = self.find_most_similar_index(topic_word)
            if most_similar_index:
-            print('\n' + raw_jokes[most_similar_index] + '\n')
+            print(raw_jokes[most_similar_index])
             # 1s delay
             time.sleep(1)
-            topic_word = input("What's another topic you would a joke on? (◕‿◕)\n	")
+            topic_word = input("What's another topic you would a joke on? (◕‿◕)\n")
         # if no similar joke found
            else:
                time.sleep(1)
                print('\n' + "Joke not found o(〒﹏〒)o	" + '\n')
-               topic_word = input("What's another topic you would a joke on? (◕‿◕)\n ")
+               topic_word = input("What's another topic you would a joke on? (◕‿◕)\n")
 
 # use word2vec to find closest word to topic word
    def find_most_similar_index(self, topic_word):
